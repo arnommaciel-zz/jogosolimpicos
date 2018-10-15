@@ -31,9 +31,9 @@ source env/bin/activate
 ```
 5. Execute os comandos abaixo para iniciar o projeto:
 ``` 
+pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
-pip install -r requirements.txt
 python manage.py makemigrations jogos
 python manage.py migrate
 python manage.py runserver

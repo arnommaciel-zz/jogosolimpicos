@@ -1,5 +1,6 @@
 from rest_framework import viewsets
-from django.http import HttpResponse, JsonResponse
+from django.db.models import Max, Min
+from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from .models import Atleta, Competicao, Modalidade, Resultado
 from .serializers import AtletaSerializer, ModalidadeSerializer, CompeticaoSerializer, ResultadoSerializer, RankingResultadoSerializer, RankingModalidadeSerializer
@@ -25,20 +26,25 @@ class ResultadoViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def ranking(request, competicao, modalidade):
-    comp = Competicao.objects.get(pk=competicao)
-    comp = CompeticaoSerializer(comp)
-
-    mod = Modalidade.objects.get(pk=modalidade)
-    mod = RankingModalidadeSerializer(mod)
+    queryset_competicao = Competicao.objects.get(pk=competicao)
+    queryset_modalidade = Modalidade.objects.get(pk=modalidade)
     
-    ranking = Resultado.objects.filter(
+    queryset_ranking = Resultado.objects.filter(
         competicao=competicao,
         modalidade=modalidade
-    ).order_by('valor')
-    ranking = RankingResultadoSerializer(ranking, many=True)
-    
-    result = '{ "competicao": ' + json.dumps(comp.data) + ','
-    result += '"modalidade": ' + json.dumps(mod.data) + ','
-    result += '"ranking": ' + json.dumps(ranking.data) + '}'
+    ).values('atleta')
 
-    return HttpResponse(result, content_type="application/json")
+    if queryset_competicao.unidade == 's':
+        queryset_ranking = queryset_ranking.annotate(resultado=Min('valor')).order_by("resultado")
+    else :
+        queryset_ranking = queryset_ranking.annotate(resultado=Max('valor')).order_by("-resultado")
+    
+    competicao = CompeticaoSerializer(queryset_competicao)
+    modalidade = RankingModalidadeSerializer(queryset_modalidade)
+    ranking = RankingResultadoSerializer(queryset_ranking, many=True)
+    
+    retorno = '{"competicao": ' + json.dumps(competicao.data) + ','
+    retorno += '"modalidade": ' + json.dumps(modalidade.data) + ','
+    retorno += '"ranking": ' + json.dumps(ranking.data) + '}'
+
+    return HttpResponse(retorno, content_type="application/json")
