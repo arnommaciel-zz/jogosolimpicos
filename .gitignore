@@ -6,3 +6,6 @@ env/
 
 # Migrations
 migrations/
+
+# .pyc
+*.pyc
