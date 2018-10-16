@@ -12,7 +12,6 @@ class CompeticaoSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 class ModalidadeSerializer(serializers.ModelSerializer):
-    competicao = CompeticaoSerializer(read_only=True)
     class Meta:
         model = Modalidade
         fields = ('__all__')
@@ -26,11 +25,6 @@ class ResultadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resultado
         fields = ('__all__')
-
-class RankingModalidadeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Modalidade
-        exclude = ('competicao',)
 
 class RankingResultadoSerializer(serializers.Serializer):
     

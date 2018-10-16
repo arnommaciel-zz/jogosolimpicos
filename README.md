@@ -40,6 +40,11 @@ python manage.py runserver
 ```
 6. Acesse o admin pela url: http://127.0.0.1:8000/admin/
 
+# Testando a aplicação
+Execute o camando abaixo:
+```
+python manage.py test
+``` 
 # Cadastrando os dados
 1. Cadastre uma competição 
 ```

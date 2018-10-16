@@ -3,7 +3,7 @@ from django.db.models import Max, Min
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from .models import Atleta, Competicao, Modalidade, Resultado
-from .serializers import AtletaSerializer, ModalidadeSerializer, CompeticaoSerializer, ResultadoSerializer, RankingResultadoSerializer, RankingModalidadeSerializer
+from .serializers import AtletaSerializer, ModalidadeSerializer, CompeticaoSerializer, ResultadoSerializer, RankingResultadoSerializer
 import json
 
 class AtletaViewSet(viewsets.ModelViewSet):
@@ -40,7 +40,7 @@ def ranking(request, competicao, modalidade):
         queryset_ranking = queryset_ranking.annotate(resultado=Max('valor')).order_by("-resultado")
     
     competicao = CompeticaoSerializer(queryset_competicao)
-    modalidade = RankingModalidadeSerializer(queryset_modalidade)
+    modalidade = ModalidadeSerializer(queryset_modalidade)
     ranking = RankingResultadoSerializer(queryset_ranking, many=True)
     
     retorno = '{"competicao": ' + json.dumps(competicao.data) + ','
